@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 18, 2023 at 12:37 PM
+-- Generation Time: Nov 18, 2023 at 01:41 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `daylap9a_tms_old`
+-- Database: `daylap9a_tms`
 --
 
 -- --------------------------------------------------------
@@ -129,7 +129,7 @@ CREATE TABLE `tbl_component` (
   `component_image` varchar(500) NOT NULL,
   `component_code` varchar(500) NOT NULL,
   `component_material` varchar(500) NOT NULL,
-  `component_description` varchar(500) NOT NULL,
+  `component_description` varchar(256) NOT NULL,
   `status` tinyint(4) NOT NULL,
   `created` datetime NOT NULL,
   `updated` datetime NOT NULL
@@ -287,6 +287,39 @@ CREATE TABLE `tbl_enquiry_details` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_enquiry_member_order_details`
+--
+
+CREATE TABLE `tbl_enquiry_member_order_details` (
+  `id` int(11) NOT NULL,
+  `enquiry_details_id` int(11) NOT NULL,
+  `tool_id` int(11) NOT NULL,
+  `required_tool` int(100) NOT NULL,
+  `fos` int(100) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `po_id` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_enquiry_status_remark`
+--
+
+CREATE TABLE `tbl_enquiry_status_remark` (
+  `id` int(11) NOT NULL,
+  `enquiry_id` int(11) NOT NULL,
+  `admin_name` varchar(255) NOT NULL,
+  `status_remark` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_inventory`
 --
 
@@ -295,6 +328,7 @@ CREATE TABLE `tbl_inventory` (
   `tool_id` int(11) NOT NULL DEFAULT 0,
   `tool_quantity` varchar(500) NOT NULL,
   `status` tinyint(3) NOT NULL DEFAULT 0,
+  `tool_comment` varchar(255) NOT NULL,
   `created` datetime NOT NULL,
   `updated` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
@@ -525,7 +559,7 @@ CREATE TABLE `tbl_operation_wise_shift_details` (
   `enquiry_id` int(11) DEFAULT NULL,
   `shift_id` int(11) DEFAULT NULL,
   `tool_id` int(11) DEFAULT NULL,
-  `machine_id` int(11) DEFAULT NULL,
+  `machine_id` int(11) DEFAULT 0,
   `operation_id` int(11) DEFAULT NULL,
   `tool_unique_code` varchar(500) DEFAULT NULL,
   `manufactured_components` varchar(500) DEFAULT NULL,
@@ -565,11 +599,12 @@ CREATE TABLE `tbl_order_details` (
   `enquiry_id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `machine_id` int(11) NOT NULL,
-  `tool_id` int(11) NOT NULL,
+  `tool_id` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`tool_id`)),
   `operation_id` int(11) NOT NULL,
   `company_id` int(11) NOT NULL,
   `member_id` int(11) NOT NULL,
   `required_tools` varchar(500) NOT NULL,
+  `fos` int(100) NOT NULL,
   `received_tools` int(11) NOT NULL,
   `instock_added` int(11) NOT NULL,
   `order_comment` varchar(500) NOT NULL,
@@ -620,9 +655,11 @@ CREATE TABLE `tbl_po_invoice_details` (
   `tool_id` int(11) DEFAULT NULL,
   `enquiry_id` int(11) DEFAULT NULL,
   `vendor_id` int(11) NOT NULL,
+  `order_details_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL DEFAULT 0,
   `particulars` varchar(500) DEFAULT NULL,
   `tool_unique_codes` varchar(500) NOT NULL,
-  `quantity` varchar(50) DEFAULT NULL,
+  `quantity` int(50) DEFAULT NULL,
   `rate` varchar(500) DEFAULT NULL,
   `discount` varchar(500) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
@@ -769,6 +806,25 @@ CREATE TABLE `tbl_tasks_attachment` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_temp_order`
+--
+
+CREATE TABLE `tbl_temp_order` (
+  `id` int(11) NOT NULL,
+  `enquiry_details_id` int(11) NOT NULL,
+  `tool_id` int(11) NOT NULL,
+  `vendor_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `required_tools` int(255) NOT NULL,
+  `fos` int(255) NOT NULL DEFAULT 0,
+  `status` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_tools`
 --
 
@@ -803,6 +859,26 @@ CREATE TABLE `tbl_tools` (
   `enquiry_depreciation_factor` varchar(500) NOT NULL,
   `enquiry_reservice_tool_life` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_tools_inward`
+--
+
+CREATE TABLE `tbl_tools_inward` (
+  `id` int(11) NOT NULL,
+  `tool_id` int(11) NOT NULL,
+  `enquiry_details_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `order_details_id` int(11) NOT NULL,
+  `unique_codes` longtext NOT NULL,
+  `received_quantity` int(255) NOT NULL,
+  `received_date` date NOT NULL,
+  `status` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -844,9 +920,11 @@ CREATE TABLE `tbl_tools_to_operation_allocations` (
 CREATE TABLE `tbl_tool_unique_codes` (
   `id` int(11) NOT NULL,
   `enquiry_id` int(11) DEFAULT NULL,
+  `order_details_id` int(11) NOT NULL,
   `tool_id` int(11) DEFAULT NULL,
   `machine_id` int(11) NOT NULL,
   `operation_id` int(11) DEFAULT NULL,
+  `member_id` int(11) NOT NULL,
   `tool_unique_code` varchar(500) DEFAULT NULL,
   `quantity` varchar(500) NOT NULL,
   `actual_life` varchar(500) NOT NULL,
@@ -854,6 +932,7 @@ CREATE TABLE `tbl_tool_unique_codes` (
   `reservice_count` varchar(500) NOT NULL,
   `tool_change_reason` varchar(500) NOT NULL,
   `reservice_flag` varchar(500) NOT NULL,
+  `order_status` int(11) NOT NULL DEFAULT 0,
   `status` int(11) DEFAULT NULL,
   `created` datetime DEFAULT NULL,
   `updated` datetime DEFAULT NULL
@@ -983,6 +1062,18 @@ ALTER TABLE `tbl_enquiry`
 -- Indexes for table `tbl_enquiry_details`
 --
 ALTER TABLE `tbl_enquiry_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_enquiry_member_order_details`
+--
+ALTER TABLE `tbl_enquiry_member_order_details`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_enquiry_status_remark`
+--
+ALTER TABLE `tbl_enquiry_status_remark`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1130,9 +1221,21 @@ ALTER TABLE `tbl_tasks_attachment`
   ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
+-- Indexes for table `tbl_temp_order`
+--
+ALTER TABLE `tbl_temp_order`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tbl_tools`
 --
 ALTER TABLE `tbl_tools`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tbl_tools_inward`
+--
+ALTER TABLE `tbl_tools_inward`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1245,6 +1348,18 @@ ALTER TABLE `tbl_enquiry`
 -- AUTO_INCREMENT for table `tbl_enquiry_details`
 --
 ALTER TABLE `tbl_enquiry_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tbl_enquiry_member_order_details`
+--
+ALTER TABLE `tbl_enquiry_member_order_details`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tbl_enquiry_status_remark`
+--
+ALTER TABLE `tbl_enquiry_status_remark`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -1392,9 +1507,21 @@ ALTER TABLE `tbl_tasks_attachment`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `tbl_temp_order`
+--
+ALTER TABLE `tbl_temp_order`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `tbl_tools`
 --
 ALTER TABLE `tbl_tools`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tbl_tools_inward`
+--
+ALTER TABLE `tbl_tools_inward`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
