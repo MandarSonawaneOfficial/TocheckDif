@@ -1,0 +1,163 @@
+CREATE TABLE `tbl_enquiry_member_order_details` (
+  `id` int(11) NOT NULL,
+  `enquiry_details_id` int(11) NOT NULL,
+  `tool_id` int(11) NOT NULL,
+  `required_tool` int(100) NOT NULL,
+  `fos` int(100) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `po_id` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_enquiry_status_remark`
+--
+
+CREATE TABLE `tbl_enquiry_status_remark` (
+  `id` int(11) NOT NULL,
+  `enquiry_id` int(11) NOT NULL,
+  `admin_name` varchar(255) NOT NULL,
+  `status_remark` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
+--
+-- Table structure for table `tbl_temp_order`
+--
+
+CREATE TABLE `tbl_temp_order` (
+  `id` int(11) NOT NULL,
+  `enquiry_details_id` int(11) NOT NULL,
+  `tool_id` int(11) NOT NULL,
+  `vendor_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `required_tools` int(255) NOT NULL,
+  `fos` int(255) NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+--
+-- Table structure for table `tbl_tools_inward`
+--
+
+CREATE TABLE `tbl_tools_inward` (
+  `id` int(11) NOT NULL,
+  `tool_id` int(11) NOT NULL,
+  `enquiry_details_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `order_details_id` int(11) NOT NULL,
+  `unique_codes` longtext COLLATE utf8_unicode_ci NOT NULL,
+  `received_quantity` int(255) NOT NULL,
+  `received_date` date NOT NULL,
+  `status` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+
+// Just Need to Add for machine_id for all records
+CREATE TABLE `tbl_operation_wise_shift_details` (
+  `id` int(11) NOT NULL,
+  `enquiry_id` int(11) DEFAULT NULL,
+  `shift_id` int(11) DEFAULT NULL,
+  `tool_id` int(11) DEFAULT NULL,
+  `machine_id` int(11) DEFAULT '0',
+  `operation_id` int(11) DEFAULT NULL,
+  `tool_unique_code` varchar(500) COLLATE armscii8_bin DEFAULT NULL,
+  `manufactured_components` varchar(500) COLLATE armscii8_bin DEFAULT NULL,
+  `rpm` varchar(500) COLLATE armscii8_bin DEFAULT NULL,
+  `feed` varchar(500) COLLATE armscii8_bin DEFAULT NULL,
+  `depth_of_cut` varchar(500) COLLATE armscii8_bin DEFAULT NULL,
+  `operator` varchar(500) COLLATE armscii8_bin DEFAULT NULL,
+  `tool_change_reason_comment` varchar(500) COLLATE armscii8_bin NOT NULL,
+  `shift_date` varchar(500) COLLATE armscii8_bin NOT NULL,
+  `status` int(11) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
+
+// FOS id is new and Tool Id is changed from int to longtext.
+CREATE TABLE `tbl_order_details` (
+  `id` int(11) NOT NULL,
+  `enquiry_id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `machine_id` int(11) NOT NULL,
+  `tool_id` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `operation_id` int(11) NOT NULL,
+  `company_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `required_tools` varchar(500) NOT NULL,
+  `fos` int(100) NOT NULL,
+  `received_tools` int(11) NOT NULL,
+  `instock_added` int(11) NOT NULL,
+  `order_comment` varchar(500) NOT NULL,
+  `status` tinyint(3) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL,
+  `updated` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+// Just Need to Add for machine_id for all records and relavant order_details_id
+CREATE TABLE `tbl_po_invoice_details` (
+  `id` int(11) NOT NULL,
+  `tool_id` int(11) DEFAULT NULL,
+  `enquiry_id` int(11) DEFAULT NULL,
+  `vendor_id` int(11) NOT NULL,
+  `order_details_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL DEFAULT '0',
+  `particulars` varchar(500) DEFAULT NULL,
+  `tool_unique_codes` varchar(500) NOT NULL,
+  `quantity` int(50) DEFAULT NULL,
+  `rate` varchar(500) DEFAULT NULL,
+  `discount` varchar(500) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL,
+  `del_date` varchar(500) DEFAULT NULL,
+  `jurisdiction` varchar(500) DEFAULT NULL,
+  `p_o_no` varchar(500) DEFAULT NULL,
+  `Date` varchar(500) DEFAULT NULL,
+  `gst` varchar(500) DEFAULT NULL,
+  `p_f` varchar(500) DEFAULT NULL,
+  `destination` varchar(500) DEFAULT NULL,
+  `delivery` varchar(500) DEFAULT NULL,
+  `transporter` varchar(500) DEFAULT NULL,
+  `payment` varchar(500) DEFAULT NULL,
+  `remark` varchar(500) DEFAULT NULL,
+  `freight` varchar(500) DEFAULT NULL,
+  `insurance` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+// Just Need to Add for machine_id for all records and relavant order_details_id and order_status
+CREATE TABLE `tbl_tool_unique_codes` (
+  `id` int(11) NOT NULL,
+  `enquiry_id` int(11) DEFAULT NULL,
+  `order_details_id` int(11) NOT NULL,
+  `tool_id` int(11) DEFAULT NULL,
+  `machine_id` int(11) NOT NULL,
+  `operation_id` int(11) DEFAULT NULL,
+  `member_id` int(11) NOT NULL,
+  `tool_unique_code` varchar(500) DEFAULT NULL,
+  `quantity` varchar(500) NOT NULL,
+  `actual_life` varchar(500) NOT NULL,
+  `actual_cpc` varchar(500) NOT NULL,
+  `reservice_count` varchar(500) NOT NULL,
+  `tool_change_reason` varchar(500) NOT NULL,
+  `reservice_flag` varchar(500) NOT NULL,
+  `order_status` int(11) NOT NULL DEFAULT '0',
+  `status` int(11) DEFAULT NULL,
+  `created` datetime DEFAULT NULL,
+  `updated` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
